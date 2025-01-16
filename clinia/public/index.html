@@ -1,74 +1,24 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script>
-    async function generatePDF() {
-      const { jsPDF } = window.jspdf;
+	<script>
+  document.getElementById("guardarBtn").addEventListener("click", function () {
+    // Seleccionar el área que deseas convertir a PDF
+    const content = document.querySelector(".container");
 
-      // Generar un folio único
-      const folio = `FOLIO-${Date.now()}`;
+    // Configurar opciones para html2pdf
+    const options = {
+      margin: 1,
+      filename: `HistoriaClinica_${Date.now()}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
 
-      // Crear un nuevo documento PDF
-      const doc = new jsPDF('p', 'mm', 'a4'); // Formato A4 en mm
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-
-      // Agregar encabezado con folio
-      doc.setFontSize(10);
-      const addHeader = (pageNumber) => {
-        doc.text(`Folio: ${folio} - Página ${pageNumber}`, pageWidth - 70, 10);
-      };
-
-      // Capturar el formulario como imagen
-      const formElement = document.querySelector('.container'); // Selecciona el contenedor del formulario
-      const canvas = await html2canvas(formElement, { scale: 2 }); // Escala 2 para mejor calidad
-      const imgData = canvas.toDataURL('image/png');
-
-      // Ajustar el contenido al tamaño del PDF
-      const imgProps = doc.getImageProperties(imgData);
-      const pdfWidth = pageWidth;
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      let yPosition = 20; // Margen superior
-
-      if (pdfHeight <= pageHeight - 30) {
-        // Si el contenido cabe en una sola página
-        addHeader(1);
-        doc.addImage(imgData, 'PNG', 0, yPosition, pdfWidth, pdfHeight);
-      } else {
-        // Si el contenido excede una página, dividir en varias páginas
-        let page = 1;
-        addHeader(page);
-        while (yPosition < pdfHeight) {
-          const heightLeft = pdfHeight - yPosition;
-          const contentHeight = Math.min(heightLeft, pageHeight - 30); // Espacio disponible por página
-
-          doc.addImage(
-            imgData,
-            'PNG',
-            0,
-            yPosition < pdfHeight ? 20 : 0,
-            pdfWidth,
-            contentHeight,
-            '',
-            'FAST'
-          );
-
-          yPosition += pageHeight - 30; // Mover la posición vertical
-          if (yPosition < pdfHeight) {
-            page++;
-            doc.addPage();
-            addHeader(page);
-          }
-        }
-      }
-
-      // Guardar el archivo PDF
-      doc.save(`${folio}.pdf`);
-    }
-  </script>
+    // Generar el PDF
+    html2pdf().set(options).from(content).save();
+  });
+</script>
 
 	<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
