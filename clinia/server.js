@@ -6,6 +6,12 @@ const { jsPDF } = require('jspdf'); // Biblioteca para generar PDFs
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Crear la carpeta 'bdd' si no existe
+if (!fs.existsSync('./bdd')) {
+    fs.mkdirSync('./bdd');
+    console.log('Carpeta "bdd" creada.');
+}
+
 // Configuración del servidor
 app.use(bodyParser.json());
 app.use(express.static('public')); // Carpeta para los archivos frontend
