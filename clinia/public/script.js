@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Genera el PDF usando html2pdf
     html2pdf().set(opt).from(elementToPrint).save();
   });
-
   // Función para imprimir
   printButton.addEventListener("click", () => {
     window.print();
