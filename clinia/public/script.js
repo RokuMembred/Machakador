@@ -24,4 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /*-------*/
-
+@media print {
+  #guardarBtn,
+  #imprimirBtn,
+  #buscarBtn {
+    display: none;
+  }
+}
