@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<script src="script.js"></script>
+<script>
+  document.getElementById("guardarBtn").addEventListener("click", function () {
+    // Seleccionar el área que deseas convertir a PDF
+    const content = document.querySelector(".container");
 
+    // Configurar opciones para html2pdf
+    const options = {
+      margin: 1,
+      filename: `HistoriaClinica_${Date.now()}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+    // Generar el PDF
+    html2pdf().set(options).from(content).save();
+  });
+</script>
 	<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
