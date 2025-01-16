@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+
+      // Generar un folio único
+      const folio = `FOLIO-${Date.now()}`;
+
+      // Crear un nuevo documento PDF
+      const doc = new jsPDF('p', 'mm', 'a4'); // Formato A4 en mm
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      // Agregar encabezado con folio
+      doc.setFontSize(10);
+      const addHeader = (pageNumber) => {
+        doc.text(`Folio: ${folio} - Página ${pageNumber}`, pageWidth - 70, 10);
+      };
+
+      // Capturar el formulario como imagen
+      const formElement = document.querySelector('.container'); // Selecciona el contenedor del formulario
+      const canvas = await html2canvas(formElement, { scale: 2 }); // Escala 2 para mejor calidad
+      const imgData = canvas.toDataURL('image/png');
+
+      // Ajustar el contenido al tamaño del PDF
+      const imgProps = doc.getImageProperties(imgData);
+      const pdfWidth = pageWidth;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      let yPosition = 20; // Margen superior
+
+      if (pdfHeight <= pageHeight - 30) {
+        // Si el contenido cabe en una sola página
+        addHeader(1);
+        doc.addImage(imgData, 'PNG', 0, yPosition, pdfWidth, pdfHeight);
+      } else {
+        // Si el contenido excede una página, dividir en varias páginas
+        let page = 1;
+        addHeader(page);
+        while (yPosition < pdfHeight) {
+          const heightLeft = pdfHeight - yPosition;
+          const contentHeight = Math.min(heightLeft, pageHeight - 30); // Espacio disponible por página
+
+          doc.addImage(
+            imgData,
+            'PNG',
+            0,
+            yPosition < pdfHeight ? 20 : 0,
+            pdfWidth,
+            contentHeight,
+            '',
+            'FAST'
+          );
+
+          yPosition += pageHeight - 30; // Mover la posición vertical
+          if (yPosition < pdfHeight) {
+            page++;
+            doc.addPage();
+            addHeader(page);
+          }
+        }
+      }
+
+      // Guardar el archivo PDF
+      doc.save(`${folio}.pdf`);
+    }
+  </script>
+
+	<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+	 	<title>Historia Clínica</title>
+  <link rel="stylesheet" href="style.css">
+	
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    fieldset {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+    }
+    legend {
+      font-weight: bold;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .grid-item label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .grid-item input,
+    .grid-item select,
+    .grid-item textarea {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    textarea {
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+	<div class="page">
+<div class="container">
+  <h1>Historia Clínica</h1>
+  <fieldset>
+    <legend>Historia Clínica</legend>
+    <div class="grid-container">
+      <div class="grid-item">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" placeholder="Ingrese el nombre">
+      </div>
+      <div class="grid-item">
+        <label for="nss">NSS:</label>
+        <input type="text" id="nss" placeholder="Ingrese el NSS">
+      </div>
+      <div class="grid-item">
+        <label for="clinica">Clínica de adscripción:</label>
+        <input type="text" id="clinica" placeholder="Ingrese la clínica">
+      </div>
+      <div class="grid-item">
+        <label for="cama">Cama:</label>
+        <input type="text" id="cama" placeholder="Ingrese el número de cama">
+      </div>
+      <div class="grid-item">
+        <label for="interrogatorio">Tipo de interrogatorio:</label>
+        <input type="text" id="interrogatorio" placeholder="Ingrese el tipo de interrogatorio">
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Ficha de Identificación</legend>
+    <div class="grid-container">
+      <div class="grid-item">
+        <label for="nombre-ficha">Nombre:</label>
+        <input type="text" id="nombre-ficha" placeholder="Ingrese el nombre">
+      </div>
+      <div class="grid-item">
+        <label for="edad">Edad:</label>
+        <input type="number" id="edad" placeholder="Ingrese la edad">
+      </div>
+      <div class="grid-item">
+        <label for="religion">Religión:</label>
+        <input type="text" id="religion" placeholder="Ingrese la religión">
+      </div>
+      <div class="grid-item">
+        <label for="escolaridad">Escolaridad:</label>
+        <input type="text" id="escolaridad" placeholder="Ingrese el nivel educativo">
+      </div>
+      <div class="grid-item">
+        <label for="ocupacion">Ocupación:</label>
+        <input type="text" id="ocupacion" placeholder="Ingrese la ocupación">
+      </div>
+      <div class="grid-item">
+        <label for="grupo-rh">Grupo y Rh:</label>
+        <input type="text" id="grupo-rh" placeholder="Ingrese el grupo y Rh">
+      </div>
+      <div class="grid-item">
+        <label for="fecha-nacimiento">Fecha de nacimiento:</label>
+        <input type="date" id="fecha-nacimiento">
+      </div>
+      <div class="grid-item">
+        <label for="lugar-nacimiento">Lugar de nacimiento:</label>
+        <input type="text" id="lugar-nacimiento" placeholder="Ingrese el lugar de nacimiento">
+      
+		</div>
+  </fieldset>
+	  
+  <fieldset>
+    <legend>Antecedentes Heredofamiliares</legend>
+    <div class="grid-container">
+      <div class="grid-item">
+        <label for="madre">Madre:</label>
+        <textarea id="madre" placeholder="Ingrese antecedentes de la madre"></textarea>
+      </div>
+		</div>
+      <div class="grid-item">
+        <label for="padre">Padre:</label>
+        <textarea id="padre" placeholder="Ingrese antecedentes del padre"></textarea>
+      </div>
+      <div class="grid-item">
+        <label for="hermanos">Hermano(s):</label>
+        <textarea id="hermanos" placeholder="Ingrese antecedentes de los hermanos"></textarea>
+      </div>
+      <div class="grid-item">
+        <label for="abuelos">Abuelos:</label>
+        <textarea id="abuelos" placeholder="Ingrese antecedentes de los abuelos"></textarea>
+      </div>
+      <div class="grid-item">
+        <label>Enfermedades:</label>
+        <div>
+			 <div class="checkbox-group">
+          <label><input type="checkbox" value="DM"> DM</label>
+          <label><input type="checkbox" value="HTA"> HTA</label>
+          <label><input type="checkbox" value="Hipotiroidismo"> Hipotiroidismo</label>
+          <label><input type="checkbox" value="Neoplasicos"> Neoplásicos</label>
+          <label><input type="checkbox" value="Nefropatias"> Nefropatías</label>
+          <label><input type="checkbox" value="Hepatopatias"> Hepatopatías</label>
+          <label><input type="checkbox" value="Neurologicos"> Neurológicos</label>
+          <label><input type="checkbox" value="Cardiopatias"> Cardiopatías</label>
+          <label><input type="checkbox" value="Reumatologicos"> Reumatológicos</label>
+          <label><input type="checkbox" value="Malformaciones"> Malformaciones</label>
+          <label><input type="checkbox" value="Psiquiatricos"> Psiquiátricos</label>
+        </div>
+      </div>
+      </fieldset>
+	  
+  <fieldset>
+  <legend>Antecedentes Personales No Patológicos</legend>
+  
+	  <!-- Tipo de vivienda -->
+<div class="grid-container">
+  <div class="grid-item">
+    <label for="tipo-vivienda">Tipo de vivienda:</label>
+    <select id="tipo-vivienda" name="tipo_vivienda">
+      <option value="casa">Casa</option>
+      <option value="departamento">Departamento</option>
+      <option value="cuarto">Cuarto</option>
+      <option value="otro">Otro</option>
+    </select>
+  </div>
+  <div class="grid-item">
+    <label for="tipo-piso">Tipo de piso:</label>
+    <input type="text" id="tipo-piso" name="tipo_piso">
+  </div>
+  <div class="grid-item">
+    <label for="tipo-paredes">Tipo de paredes:</label>
+    <input type="text" id="tipo-paredes" name="tipo_paredes">
+  </div>
+  <div class="grid-item">
+    <label for="tipo-techo">Tipo de techo:</label>
+    <input type="text" id="tipo-techo" name="tipo_techo">
+  </div>
+</div>
+
+  <div class="grid-container">
+    <div class="grid-item">
+		
+      <label for="tipo-piso">Tipo de piso:</label>
+      <input type="text" id="tipo-piso" name="tipo_piso">
+    </div>
+    <div class="grid-item">
+      <label for="tipo-paredes">Tipo de paredes:</label>
+      <input type="text" id="tipo-paredes" name="tipo_paredes">
+    </div>
+    <div class="grid-item">
+      <label for="tipo-techo">Tipo de techo:</label>
+      <input type="text" id="tipo-techo" name="tipo_techo">
+    </div>
+  </div>
+
+  <!-- Servicios -->
+  <label>Servicios:</label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="Agua potable"> Agua potable</label>
+    <label><input type="checkbox" value="Electricidad"> Electricidad</label>
+    <label><input type="checkbox" value="Drenaje"> Drenaje</label>
+    <label><input type="checkbox" value="Gas"> Gas</label>
+  </div>
+
+  <!-- Tipo de baño -->
+  <div class="grid-container">
+    <div class="grid-item">
+      <label for="tipo-baño">Tipo de baño:</label>
+      <input type="text" id="tipo-baño" name="tipo_baño">
+    </div>
+    <div class="grid-item">
+      <label for="numero-habitaciones">Número de habitaciones:</label>
+      <input type="number" id="numero-habitaciones" name="numero_habitaciones" min="1">
+    </div>
+    <div class="grid-item">
+      <label for="numero-personas">Número de personas que viven en la casa:</label>
+      <input type="number" id="numero-personas" name="numero_personas" min="1">
+    </div>
+  </div>
+
+  <!-- Zoonosis -->
+  <label for="zoonosis">Zoonosis (animales presentes):</label>
+  <textarea id="zoonosis" name="zoonosis"></textarea>
+
+  <!-- Dieta -->
+  <div class="grid-container">
+    <div class="grid-item">
+      <label for="tipo-dieta">Tipo de dieta:</label>
+      <select id="tipo-dieta" name="tipo_dieta">
+        <option value="sana">Sana</option>
+        <option value="regular">Regular</option>
+        <option value="mala">Mala</option>
+      </select>
+    </div>
+    <div class="grid-item">
+      <label for="comidas-dia">Comidas al día:</label>
+      <input type="number" id="comidas-dia" name="comidas_dia" min="1" max="10">
+    </div>
+  </div>
+
+  <!-- Higiene -->
+  <div class="grid-container">
+    <div class="grid-item">
+      <label for="higiene-bucal">Higiene bucal (veces al día):</label>
+      <input type="number" id="higiene-bucal" name="higiene_bucal" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="baño-semanal">Baño (veces a la semana):</label>
+      <input type="number" id="baño-semanal" name="baño_semanal" min="0" max="7">
+    </div>
+  </div>
+
+  <!-- Consumo de alimentos -->
+  <label>Consumo de alimentos (veces por semana):</label>
+  <div class="grid-container">
+    <div class="grid-item">
+      <label for="verduras">Verduras:</label>
+      <input type="number" id="verduras" name="verduras" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="frutas">Frutas:</label>
+      <input type="number" id="frutas" name="frutas" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="leguminosas">Leguminosas:</label>
+      <input type="number" id="leguminosas" name="leguminosas" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="carne-blanca">Carne blanca:</label>
+      <input type="number" id="carne-blanca" name="carne_blanca" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="carne-roja">Carne roja:</label>
+      <input type="number" id="carne-roja" name="carne_roja" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="carne-puerco">Carne de puerco:</label>
+      <input type="number" id="carne-puerco" name="carne_puerco" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="pescado">Pescado:</label>
+      <input type="number" id="pescado" name="pescado" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="mariscos">Mariscos:</label>
+      <input type="number" id="mariscos" name="mariscos" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="dulces">Dulces/Chocolates:</label>
+      <input type="number" id="dulces" name="dulces" min="0" max="7">
+    </div>
+    <div class="grid-item">
+      <label for="cereales">Cereales:</label>
+      <input type="number" id="cereales" name="cereales" min="0" max="7">
+    </div>
+  </div>
+</fieldset>
+
+<!-- Antecedentes Personales Patológicos -->
+<fieldset>
+  <legend>Antecedentes Personales Patológicos</legend>
+  <div class="horizontal-fields">
+    <div class="field-item">
+      <label for="enfermedades-infancia">Enfermedades propias de la infancia:</label>
+      <textarea id="enfermedades-infancia" name="enfermedades_infancia"></textarea>
+    </div>
+	  
+    <div class="field-item">
+      <label for="tabaquismo">Tabaquismo:</label>
+      <select id="tabaquismo" name="tabaquismo">
+        <option value="no">No</option>
+        <option value="si">Sí</option>
+        <option value="ocasional">Ocasional</option>
+      </select>
+    </div>
+    <div class="field-item">
+      <label for="cigarrillos-dia">Cigarrillos al día:</label>
+      <input type="number" id="cigarrillos-dia" name="cigarrillos_dia" min="0">
+    </div>
+    <div class="field-item">
+      <label for="anos-fumando">Años fumando:</label>
+      <input type="number" id="anos-fumando" name="anos_fumando" min="0">
+    </div>
+    <div class="field-item">
+      <label for="indice-tabaquismo">Índice de tabaquismo:</label>
+      <input type="text" id="indice-tabaquismo" name="indice_tabaquismo" readonly placeholder="Cálculo automático">
+    </div>
+    <div class="field-item">
+      <label for="alcoholismo">Alcoholismo:</label>
+      <select id="alcoholismo" name="alcoholismo">
+        <option value="no">No</option>
+        <option value="si">Sí</option>
+        <option value="ocasional">Ocasional</option>
+      </select>
+    </div>
+    <div class="field-item">
+      <label for="copas-semana">Número de copas a la semana (cervezas):</label>
+      <input type="number" id="copas-semana" name="copas_semana" min="0">
+    </div>
+    <div class="field-item">
+      <label for="anos-tomando">Años tomando:</label>
+      <input type="number" id="anos-tomando" name="anos_tomando" min="0">
+    </div>
+    <div class="field-item">
+      <label for="otras-toxicomanias">Otras toxicomanías:</label>
+      <textarea id="otras-toxicomanias" name="otras_toxicomanias"></textarea>
+    </div>
+    <div class="field-item">
+      <label for="alergias">Alergias:</label>
+      <textarea id="alergias" name="alergias"></textarea>
+    </div>
+    <div class="field-item">
+      <label for="traumaticos">Traumáticos:</label>
+      <textarea id="traumaticos" name="traumaticos"></textarea>
+    </div>
+    <div class="field-item">
+      <label for="cirugias">Cirugías:</label>
+      <textarea id="cirugias" name="cirugias"></textarea>
+    </div>
+    <div class="field-item">
+      <label for="transfusiones">Transfusiones:</label>
+      <textarea id="transfusiones" name="transfusiones"></textarea>
+    </div>
+    <div class="field-item">
+      <label for="exposicion-biomasa">Exposición a la biomasa:</label>
+      <textarea id="exposicion-biomasa" name="exposicion_biomasa"></textarea>
+    </div>
+    <div class="field-item">
+      <label for="hospitalizaciones-previas">Hospitalizaciones previas:</label>
+      <textarea id="hospitalizaciones-previas" name="hospitalizaciones_previas"></textarea>
+    <div class="grid-item">
+      <label for="enfermedades-cronico-degenerativas">Enfermedades crónico-degenerativas (como se diagnosticó, años de evolución, control, tratamiento, exacerbaciones):</label>
+      <textarea id="enfermedades-cronico-degenerativas" name="enfermedades_cronico_degenerativas"></textarea>
+    </div>
+		<div class="grid-item">
+      <label for="otros">Otros:</label>
+      <textarea id="otros" name="otros"></textarea>
+  </div>
+	</div>
+	  /*carta fin*/
+		<div class="grid-item">
+      <label for="padecimiento-actual">Padecimiento actual; Inicio de padecimiento, como empezó, se exacerba o remite con alguna actividad, se asocia, con otra sintomatología, se relaciona, su padecimiento con alguna acción o actividad del pasado, es la primera vez que lo padece, etc:</label>
+      <textarea id="padecimiento-actual" name="padecimiento-actual"></textarea>
+    </div>
+</fieldset>
+  <fieldset>
+    <legend>Antecedentes Gineco-Obstétricos</legend>
+    <div class="grid-container">
+      <div class="grid-item">
+        <label for="menarca">Menarca:</label>
+        <input type="text" id="menarca" placeholder="Ingrese edad de menarca">
+      </div>
+      <div class="grid-item">
+        <label for="ritmo">Ritmo:</label>
+        <input type="text" id="ritmo" placeholder="Ingrese el ritmo menstrual">
+      </div>
+      <div class="grid-item">
+        <label for="gestas">Gestas:</label>
+        <input type="number" id="gestas" placeholder="Número de gestas">
+      </div>
+      <div class="grid-item">
+        <label for="partos">Partos:</label>
+        <input type="number" id="partos" placeholder="Número de partos">
+      </div>
+      <div class="grid-item">
+        <label for="cesareas">Cesáreas:</label>
+        <input type="number" id="cesareas" placeholder="Número de cesáreas">
+      </div>
+      <div class="grid-item">
+        <label for="abortos">Abortos:</label>
+        <input type="number" id="abortos" placeholder="Número de abortos">
+      </div>
+      <div class="grid-item">
+        <label for="fup">Fecha de última menstruación:</label>
+        <input type="date" id="fup">
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Hábitos</legend>
+    <div class="grid-container">
+      <div class="grid-item">
+        <label for="sueno">Sueño:</label>
+        <textarea id="sueno" placeholder="Describa hábitos de sueño"></textarea>
+      </div>
+      <div class="grid-item">
+        <label for="estrenimiento">Estreñimiento:</label>
+        <textarea id="estrenimiento" placeholder="Describa problemas de estreñimiento"></textarea>
+      </div>
+    </div>
+  </fieldset>
+<legend>Interrogatorio por Aparatos y Sistemas</legend>
+<div class="checkbox-grid">
+  <!-- Síntomas generales -->
+  <div class="checkbox-item">
+    <label>Síntomas generales:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Fiebre"> Fiebre</label>
+      <label><input type="checkbox" value="Astenia"> Astenia</label>
+      <label><input type="checkbox" value="Adinamia"> Adinamia</label>
+      <label><input type="checkbox" value="Nausea"> Náusea</label>
+      <label><input type="checkbox" value="Vomito"> Vómito</label>
+      <label><input type="checkbox" value="Perdida de peso"> Pérdida de peso</label>
+      <label><input type="checkbox" value="Cefalea"> Cefalea</label>
+    </div>
+    <textarea placeholder="Otros síntomas"></textarea>
+  </div>
+
+  <!-- Aparato digestivo -->
+  <div class="checkbox-item">
+    <label>Aparato digestivo:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Mareo"> Mareo</label>
+      <label><input type="checkbox" value="Nausea"> Náusea</label>
+      <label><input type="checkbox" value="Vomito"> Vómito</label>
+      <label><input type="checkbox" value="Halitosis"> Halitosis</label>
+      <label><input type="checkbox" value="Boca seca"> Boca seca</label>
+      <label><input type="checkbox" value="Disfagia"> Disfagia</label>
+      <label><input type="checkbox" value="Odinofagia"> Odinofagia</label>
+      <label><input type="checkbox" value="Pirosis"> Pirosis</label>
+      <label><input type="checkbox" value="Melena"> Melena</label>
+      <label><input type="checkbox" value="Hematemesis"> Hematemesis</label>
+      <label><input type="checkbox" value="Flatulencia"> Flatulencia</label>
+      <label><input type="checkbox" value="Diarrea"> Diarrea</label>
+      <label><input type="checkbox" value="Rectorragia"> Rectorragia</label>
+      <label><input type="checkbox" value="Estreñimiento"> Estreñimiento</label>
+      <label><input type="checkbox" value="Tenesmo"> Tenesmo</label>
+      <label><input type="checkbox" value="Acolia"> Acolia</label>
+      <label><input type="checkbox" value="Meteorismo"> Meteorismo</label>
+    </div>
+    <textarea placeholder="Otros síntomas"></textarea>
+  </div>
+
+  <!-- Aparato respiratorio -->
+  <div class="checkbox-item">
+    <label>Aparato respiratorio:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Disnea"> Disnea</label>
+      <label><input type="checkbox" value="Tos"> Tos</label>
+      <label><input type="checkbox" value="Disfonía"> Disfonía</label>
+      <label><input type="checkbox" value="Afonía"> Afonía</label>
+      <label><input type="checkbox" value="Cianosis"> Cianosis</label>
+      <label><input type="checkbox" value="Apnea del sueño"> Apnea del sueño</label>
+      <label><input type="checkbox" value="Odinofagia"> Odinofagia</label>
+      <label><input type="checkbox" value="Rinorrea"> Rinorrea</label>
+      <label><input type="checkbox" value="Ronquera"> Ronquera</label>
+      <label><input type="checkbox" value="Congestión nasal"> Congestión nasal</label>
+      <label><input type="checkbox" value="Epistaxis"> Epistaxis</label>
+    </div>
+    <textarea placeholder="Otros síntomas"></textarea>
+  </div>
+
+  <!-- Aparato cardiovascular -->
+  <div class="checkbox-item">
+    <label>Aparato cardiovascular:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Disnea"> Disnea</label>
+      <label><input type="checkbox" value="Dolor torácico"> Dolor torácico</label>
+      <label><input type="checkbox" value="Síncope"> Síncope</label>
+      <label><input type="checkbox" value="Palpitaciones"> Palpitaciones</label>
+      <label><input type="checkbox" value="Cianosis"> Cianosis</label>
+      <label><input type="checkbox" value="Diaforesis"> Diaforesis</label>
+      <label><input type="checkbox" value="Fatiga"> Fatiga</label>
+      <label><input type="checkbox" value="Edema"> Edema</label>
+      <label><input type="checkbox" value="Ansiedad"> Ansiedad</label>
+      <label><input type="checkbox" value="Desmayos"> Desmayos</label>
+    </div>
+    <textarea placeholder="Otros síntomas"></textarea>
+  </div>
+
+  <!-- Aparato urinario -->
+  <div class="checkbox-item">
+    <label>Aparato urinario:</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" value="Incontinencia urinaria"> Incontinencia urinaria</label>
+      <label><input type="checkbox" value="Disuria"> Disuria</label>
+      <label><input type="checkbox" value="Tenesmo"> Tenesmo</label>
+      <label><input type="checkbox" value="Hematuria"> Hematuria</label>
+      <label><input type="checkbox" value="Coluria"> Coluria</label>
+      <label><input type="checkbox" value="Quiluria"> Quiluria</label>
+      <label><input type="checkbox" value="Poliuria"> Poliuria</label>
+      <label><input type="checkbox" value="Anuria"> Anuria</label>
+      <label><input type="checkbox" value="Nicturia"> Nicturia</label>
+      <label><input type="checkbox" value="Intermitencia del chorro"> Intermitencia del chorro</label>
+      <label><input type="checkbox" value="Urgencia urinaria"> Urgencia urinaria</label>
+      <label><input type="checkbox" value="Chorro débil"> Chorro débil</label>
+      <label><input type="checkbox" value="Polaquiuria"> Polaquiuria</label>
+    </div>
+    <textarea placeholder="Otros síntomas"></textarea>
+  </div>
+</div>
+<!-- FALTANTES -->
+	  <legend>Sistema Endocrinológico</legend>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="Intolerancia al frío"> Intolerancia al frío</label>
+    <label><input type="checkbox" value="Intolerancia al calor"> Intolerancia al calor</label>
+    <label><input type="checkbox" value="Letargia"> Letargia</label>
+    <label><input type="checkbox" value="Polidipsia"> Polidipsia</label>
+    <label><input type="checkbox" value="Polifagia"> Polifagia</label>
+    <label><input type="checkbox" value="Bradipsiquia"> Bradipsiquia</label>
+    <label><input type="checkbox" value="Pérdida de peso"> Pérdida de peso</label>
+    <label><input type="checkbox" value="Diaforesis"> Diaforesis</label>
+    <label><input type="checkbox" value="Bradilalia"> Bradilalia</label>
+    <label><input type="checkbox" value="Taquilalia"> Taquilalia</label>
+  </div>
+  <textarea placeholder="Otros síntomas"></textarea>
+</fieldset>
+
+<fieldset>
+  <legend>Aparato Osteomuscular</legend>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="Mialgias"> Mialgias</label>
+    <label><input type="checkbox" value="Artralgias"> Artralgias</label>
+    <label><input type="checkbox" value="Crepitación"> Crepitación</label>
+    <label><input type="checkbox" value="Debilidad muscular"> Debilidad muscular</label>
+    <label><input type="checkbox" value="Cianosis"> Cianosis</label>
+    <label><input type="checkbox" value="Deformidad"> Deformidad</label>
+    <label><input type="checkbox" value="Disminución de los arcos de movilidad"> Disminución de los arcos de movilidad</label>
+    <label><input type="checkbox" value="Dificultad a la deambulación"> Dificultad a la deambulación</label>
+  </div>
+  <textarea placeholder="Otros síntomas"></textarea>
+</fieldset>
+
+<fieldset>
+  <legend>Sistema Hematológico y Linfático</legend>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="Petequias"> Petequias</label>
+    <label><input type="checkbox" value="Equimosis"> Equimosis</label>
+    <label><input type="checkbox" value="Hemorragia"> Hemorragia</label>
+    <label><input type="checkbox" value="Epistaxis"> Epistaxis</label>
+    <label><input type="checkbox" value="Parestesias"> Parestesias</label>
+    <label><input type="checkbox" value="Fatiga"> Fatiga</label>
+    <label><input type="checkbox" value="Síncope"> Síncope</label>
+    <label><input type="checkbox" value="Lipotimia"> Lipotimia</label>
+  </div>
+  <textarea placeholder="Otros síntomas"></textarea>
+</fieldset>
+
+<fieldset>
+  <legend>Aparato Psicosomático</legend>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="Delirio"> Delirio</label>
+    <label><input type="checkbox" value="Alucinaciones"> Alucinaciones</label>
+    <label><input type="checkbox" value="Hipersomnia"> Hipersomnia</label>
+    <label><input type="checkbox" value="Insomnio"> Insomnio</label>
+    <label><input type="checkbox" value="Ansiedad"> Ansiedad</label>
+    <label><input type="checkbox" value="Depresión"> Depresión</label>
+    <label><input type="checkbox" value="Fobias"> Fobias</label>
+    <label><input type="checkbox" value="Tic"> Tic</label>
+    <label><input type="checkbox" value="Alteraciones del pensamiento"> Alteraciones del pensamiento</label>
+    <label><input type="checkbox" value="Pensamiento suicida"> Pensamiento suicida</label>
+  </div>
+  <textarea placeholder="Otros síntomas"></textarea>
+	<fieldset>
+  <legend>Signos Vitales</legend>
+  <div class="grid-container">
+    <div class="grid-item">
+      <label>Tensión arterial:</label>
+      <input type="text" placeholder="mmHg">
+    </div>
+    <div class="grid-item">
+      <label>Frecuencia cardiaca:</label>
+      <input type="text" placeholder="Lpm">
+    </div>
+    <div class="grid-item">
+      <label>Frecuencia respiratoria:</label>
+      <input type="text" placeholder="Rpm">
+    </div>
+    <div class="grid-item">
+      <label>Temperatura:</label>
+      <input type="text" placeholder="°C">
+    </div>
+    <div class="grid-item">
+      <label>Saturación de O2:</label>
+      <input type="text" placeholder="%">
+    </div>
+    <div class="grid-item">
+      <label>Peso:</label>
+      <input type="text" placeholder="Kg">
+    </div>
+    <div class="grid-item">
+      <label>Talla:</label>
+      <input type="text" placeholder="m">
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Exploración Física</legend>
+  <div class="grid-container">
+    <div class="grid-item">
+      <label>Estado neurológico, piel y tegumentos:</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+    <div class="grid-item">
+      <label>Cabeza y cuello:</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+    <div class="grid-item">
+      <label>Tórax (Precordial y campos pulmonares):</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+    <div class="grid-item">
+      <label>Abdomen:</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+    <div class="grid-item">
+      <label>Genitales externos:</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+    <div class="grid-item">
+      <label>Extremidades torácicas y pélvicas:</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Estudios Paraclínicos</legend>
+  <div class="grid-container">
+    <div class="grid-item">
+      <label>Estudios de laboratorio:</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+    <div class="grid-item">
+      <label>Estudios de gabinete (Ultrasonido, Radiografía, TC):</label>
+      <input type="text" placeholder="Describa aquí">
+    </div>
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Impresión Diagnóstica</legend>
+  <textarea placeholder="Describa aquí" rows="3"></textarea>
+</fieldset>
+
+<fieldset>
+  <legend>Análisis y Plan</legend>
+  <textarea placeholder="Describa aquí" rows="5"></textarea>
+</fieldset>
+
+
+  <footer>
+    <p>© 2025 Historia Clínica. Todos los derechos reservados.</p>
+  </footer>
+</div>
+	<div class="fixed-buttons">
+  <button onclick="guardar()">Guardar</button>
+  <button onclick="window.print()">Imprimir</button>
+  <button onclick="buscar()">Buscar</button>
+<button onclick="generatePDF()">Guardar como PDF</button>
+
+</div>
+
+</body>
+</html>

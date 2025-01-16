@@ -1,0 +1,144 @@
+body {
+  font-family: sans-serif;
+  background-color: #eaeaea; /* Un gris suave para el fondo */
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #fdfdfd; /* Blanco suave */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra más difusa */
+  border-radius: 10px;
+}
+
+fieldset {
+  margin-bottom: 20px;
+  border: 1px solid #cccccc; /* Gris suave */
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f8f8f8; /* Fondo claro pero no blanco puro */
+}
+
+legend {
+  font-weight: bold;
+  color: #444444; /* Gris oscuro para menor contraste */
+}
+
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Más espacio entre las secciones */
+}
+
+.grid-item {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333333; /* Texto gris oscuro */
+}
+
+input[type="text"], input[type="number"], input[type="date"], textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cccccc; /* Bordes suaves */
+  border-radius: 5px;
+  background-color: #f6f6f6; /* Fondo ligeramente más oscuro */
+  box-sizing: border-box;
+  font-size: 14px;
+  color: #222222; /* Texto más oscuro */
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, textarea:focus {
+  border-color: #888888; /* Enfoque con un gris intermedio */
+  outline: none;
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+footer {
+  text-align: center;
+  margin-top: 20px;
+  color: #666666; /* Gris intermedio */
+  font-size: 14px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Espaciado entre los checkboxes */
+  align-items: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Espacio entre el checkbox y el texto */
+  color: #444444; /* Texto gris oscuro */
+}
+
+input[readonly] {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+textarea {
+  width: 100%;
+  height: 50px;
+  margin-top: 10px;
+  resize: none;
+  background-color: #f6f6f6; /* Fondo ligeramente más oscuro */
+}
+
+textarea:focus {
+  border-color: #888888; /* Enfoque consistente */
+}
+
+.checkbox-group label:hover {
+  color: #000; /* Oscurecer texto al pasar el mouse */
+}
+
+.container:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más intensa al pasar el mouse */
+}
+/* botones*/
+.fixed-buttons {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.fixed-buttons button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.fixed-buttons button:hover {
+  background-color: #0056b3;
+}
+
+/* Ocultar botones en la impresión */
+@media print {
+  .fixed-buttons {
+    display: none;
+  }
+}
