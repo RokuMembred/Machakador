@@ -1,63 +1,51 @@
 body {
   font-family: sans-serif;
-  background-color: #eaeaea; /* Un gris suave para el fondo */
+  background-color: #eaeaea;
   margin: 0;
   padding: 0;
 }
 
 .container {
-  max-width: 800px;
-  margin: 40px auto;
+  max-width: 1200px; /* Ancho máximo para pantallas grandes */
+  width: 100%; /* Ajusta al ancho completo del contenedor */
+  margin: 20px auto;
   padding: 20px;
-  background-color: #fdfdfd; /* Blanco suave */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Sombra más difusa */
+  background-color: #fdfdfd;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   border-radius: 10px;
 }
 
 fieldset {
   margin-bottom: 20px;
-  border: 1px solid #cccccc; /* Gris suave */
+  border: 1px solid #cccccc;
   padding: 15px;
   border-radius: 8px;
-  background-color: #f8f8f8; /* Fondo claro pero no blanco puro */
+  background-color: #f8f8f8;
 }
 
 legend {
   font-weight: bold;
-  color: #444444; /* Gris oscuro para menor contraste */
-}
-
-.grid-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px; /* Más espacio entre las secciones */
-}
-
-.grid-item {
-  margin-bottom: 20px;
+  color: #444444;
 }
 
 label {
   display: block;
   margin-bottom: 5px;
-  color: #333333; /* Texto gris oscuro */
+  color: #333333;
 }
 
-input[type="text"], input[type="number"], input[type="date"], textarea {
+input[type="text"],
+input[type="number"],
+input[type="date"],
+textarea,
+select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #cccccc; /* Bordes suaves */
+  margin-bottom: 15px;
+  border: 1px solid #cccccc;
   border-radius: 5px;
-  background-color: #f6f6f6; /* Fondo ligeramente más oscuro */
-  box-sizing: border-box;
+  background-color: #f6f6f6;
   font-size: 14px;
-  color: #222222; /* Texto más oscuro */
-  transition: border-color 0.3s ease;
-}
-
-input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, textarea:focus {
-  border-color: #888888; /* Enfoque con un gris intermedio */
-  outline: none;
 }
 
 textarea {
@@ -65,52 +53,18 @@ textarea {
   resize: vertical;
 }
 
-footer {
-  text-align: center;
-  margin-top: 20px;
-  color: #666666; /* Gris intermedio */
-  font-size: 14px;
-}
-
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px; /* Espaciado entre los checkboxes */
-  align-items: center;
+  gap: 10px;
 }
 
 .checkbox-group label {
   display: flex;
   align-items: center;
-  gap: 5px; /* Espacio entre el checkbox y el texto */
-  color: #444444; /* Texto gris oscuro */
+  gap: 5px;
 }
 
-input[readonly] {
-  background-color: #f0f0f0;
-  cursor: not-allowed;
-}
-
-textarea {
-  width: 100%;
-  height: 50px;
-  margin-top: 10px;
-  resize: none;
-  background-color: #f6f6f6; /* Fondo ligeramente más oscuro */
-}
-
-textarea:focus {
-  border-color: #888888; /* Enfoque consistente */
-}
-
-.checkbox-group label:hover {
-  color: #000; /* Oscurecer texto al pasar el mouse */
-}
-
-.container:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Sombra más intensa al pasar el mouse */
-}
-/* botones*/
 .fixed-buttons {
   position: fixed;
   top: 20px;
@@ -136,9 +90,34 @@ textarea:focus {
   background-color: #0056b3;
 }
 
-/* Ocultar botones en la impresión */
+/* Evita desplazamiento horizontal en pantallas pequeñas */
+@media (max-width : 1100px ){
+  .container {
+    padding: 10px;
+    margin: 10px;
+  }
+}
+
+/* Ajustes para impresión */
 @media print {
+  body {
+    background-color: white; /* Blanco puro para impresión */
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    box-shadow: none; /* Sin sombras al imprimir */
+    border: none;
+    width: 100%; /* Ancho completo en impresión */
+    margin: 0; /* Sin margen al imprimir */
+  }
+
   .fixed-buttons {
-    display: none;
+    display: none; /* Oculta los botones al imprimir */
+  }
+
+  fieldset {
+    page-break-inside: avoid; /* Evita cortes dentro de fieldsets */
   }
 }
