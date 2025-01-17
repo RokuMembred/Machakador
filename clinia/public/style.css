@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-  max-width: 1200px; /* Ancho máximo para pantallas grandes */
+  max-width: 1100px; /* Ancho máximo para pantallas grandes */
   width: 100%; /* Ajusta al ancho completo del contenedor */
   margin: 20px auto;
   padding: 20px;
